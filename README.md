@@ -22,9 +22,11 @@ Fontselect has one argument, an options object that you might want to customise:
 * lookahead: a number of fonts to try and preload ahead in the select box
 * fetch: Fetch an updated list from Google.
 * fetchStr: text to use while the list is loading
-* apiKey: An optional key to append to the api URL when fetching list. Anonymous
-usage works but it may stop working or has its limitations. Google recommends
-using a key
+* apiKey: An optional key to append to the api URL when fetching the list.
+Anonymously works but it may stop working or reach certain limits. Google
+recommends using a key.  See
+[Google Web Fonts' Developer API](https://developers.google.com/webfonts/docs/developer_api)
+for more details.
 
         $('input.fonts').fontselect({
           style: 'font-select',
