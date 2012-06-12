@@ -239,7 +239,8 @@
       fonts:            _fonts,
       apiUrl:           'https://www.googleapis.com/webfonts/v1/webfonts',
       apiKkey:          null,
-      fetch:            false
+      fetch:            false,
+      fetchStr:         'Fetching list...'
     }, options);
     
     var Fontselect = (function(){
@@ -263,7 +264,7 @@
         if (this.options.apiKey) {
           url = url + '?key=' + this.options.apiKey;
         }
-        $('span', this.$select).html('Fetching list...');
+        $('span', this.$select).html(this.options.fetchStr);
         $.ajax({
           url: url,
           dataType: 'jsonp',

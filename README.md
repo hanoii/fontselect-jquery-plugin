@@ -20,11 +20,18 @@ Fontselect has one argument, an options object that you might want to customise:
 * style: the class to give the new font selector
 * placeholder: text to use when no font is selected yet
 * lookahead: a number of fonts to try and preload ahead in the select box
+* fetch: Fetch an updated list from Google.
+* fetchStr: text to use while the list is loading
+* apiKey: An optional key to append to the api URL when fetching list. Anonymous
+usage works but it may stop working or has its limitations. Google recommends
+using a key
 
         $('input.fonts').fontselect({
           style: 'font-select',
           placeholder: 'Select a font',
-          lookahead: 2
+          lookahead: 2,
+          fetch: true,
+          fetchStr: 'Fetching list...'
         });
            
 ### Events
