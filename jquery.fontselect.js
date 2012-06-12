@@ -8,11 +8,11 @@
 
 (function($){
 
-  $.fn.fontselect = function(options) {  
+  $.fn.fontselect = function(options) {
 
      var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-     var fonts = [
+     var _fonts = [
       "Aclonica",
       "Allan",
       "Annie+Use+Your+Telescope",
@@ -231,12 +231,16 @@
       "Yeseva+One",
       "Zeyada"];
 
-    var settings = {
-      style: 'font-select',
-      placeholder: 'Select a font',
-      lookahead: 2,
-      api: 'http://fonts.googleapis.com/css?family='
-    };
+    var settings = $.extend( {
+      style:            'font-select',
+      placeholder:      'Select a font',
+      lookahead:        2,
+      cssUrl:          'http://fonts.googleapis.com/css?family=',
+      fonts:            _fonts,
+      apiUrl:           'https://www.googleapis.com/webfonts/v1/webfonts',
+      apiKkey:          null,
+      fetch:            false
+    }, options);
     
     var Fontselect = (function(){
     
@@ -245,6 +249,47 @@
         this.options = o;
         this.active = false;
         this.setupHtml();
+        if (this.options.fetch) {
+          this.fetchFonts();
+        }
+        else {
+          this.setupFonts();
+        }
+      }
+
+      Fontselect.prototype.fetchFonts = function () {
+        var fontselect = this;
+        var url = this.options.apiUrl;
+        if (this.options.apiKey) {
+          url = url + '?key=' + this.options.apiKey;
+        }
+        $('span', this.$select).html('Fetching list...');
+        $.ajax({
+          url: url,
+          dataType: 'jsonp',
+          success: function(data) {
+            if (data.items && data.items.length > 0) {
+              fontselect.options.fonts = [];
+              $.each(data.items, function(key, font) {
+                $.each(font.variants, function(key, variant) {
+                  var family = font.family.replace(/ /g, '+');
+                  if (font.variants.length > 1 || (variant != 400 && variant != 'regular')) {
+                    family = family + ':' + variant;
+                  }
+                  fontselect.options.fonts.push(family);
+                });
+              });
+            }
+            $('span', fontselect.$select).html(fontselect.options.placeholder);
+            fontselect.setupFonts();
+          },
+          error: function(xmlhttp) {
+            // JSONP doesn't trigger any event if there's an error with the request
+          }
+        });
+      }
+
+      Fontselect.prototype.setupFonts = function() {
         this.getVisibleFonts();
         this.bindEvents();
 
@@ -333,14 +378,15 @@
       };
       
       Fontselect.prototype.fontsAsHtml = function(){
-        
+
+	var fonts = this.options.fonts;
         var l = fonts.length;
         var r, s, h = '';
         
         for(var i=0; i<l; i++){
           r = this.toReadable(fonts[i]);
           s = this.toStyle(fonts[i]);
-          h += '<li data-value="'+ fonts[i] +'" style="font-family: '+s['font-family'] +'; font-weight: '+s['font-weight'] +'">'+ r +'</li>';
+          h += '<li data-value="'+ fonts[i] +'" style="font-family: '+s['font-family'] +'; font-weight: '+s['font-weight'] +'; font-style: '+s['font-style'] +'">'+ r +'</li>';
         }
         
         return h;
@@ -352,7 +398,11 @@
       
       Fontselect.prototype.toStyle = function(font){
         var t = font.split(':');
-        return {'font-family': this.toReadable(t[0]), 'font-weight': (t[1] || 400)};
+        var variant = t[1] || '';
+        var weight = variant.match(/(?:[0-9]+|bold)/) ? variant.match(/(?:[0-9]+|bold)/)[0] : 400;
+        var style = variant.match(/italic/) ? variant.match(/italic/)[0] : 'normal';
+
+        return {'font-family': this.toReadable(t[0]), 'font-weight': weight, 'font-style': style};
       };
       
       Fontselect.prototype.getVisibleFonts = function(){
@@ -383,7 +433,7 @@
       
       Fontselect.prototype.addFontLink = function(font){
       
-        var link = this.options.api + font;
+        var link = this.options.cssUrl + font;
       
         if ($("link[href*='" + font + "']").length === 0){
 			$('link:last').after('<link href="' + link + '" rel="stylesheet" type="text/css">');
@@ -393,10 +443,7 @@
       return Fontselect;
     })();
 
-    return this.each(function(options) {        
-      // If options exist, lets merge them
-      if (options) $.extend( settings, options );
-      
+    return this.each(function() {
       return new Fontselect(this, settings);
     });
 
