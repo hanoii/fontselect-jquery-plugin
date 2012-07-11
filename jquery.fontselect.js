@@ -1,4 +1,4 @@
-/*
+/*!
  * jQuery.fontselect - A font selector for the Google Web Fonts api
  * Tom Moor, http://tommoor.com
  * Copyright (c) 2011 Tom Moor
