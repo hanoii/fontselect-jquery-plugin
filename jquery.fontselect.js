@@ -1038,7 +1038,6 @@
       apiUrl:           'https://www.googleapis.com/webfonts/v1/webfonts',
       apiKkey:          null,
       fetch:            false,
-      fetchStr:         'Fetching list...'
     }, options);
 
     var Fontselect = (function(){
@@ -1047,12 +1046,10 @@
         this.$original = $(original);
         this.options = o;
         this.active = false;
-		this.setupHtml();
+        this.setupHtml();
+        this.setupFonts();
         if (this.options.fetch) {
           this.fetchFonts();
-        }
-        else {
-          this.setupFonts();
         }
       }
 
@@ -1062,7 +1059,6 @@
         if (this.options.apiKey) {
           url = url + '?key=' + this.options.apiKey;
         }
-        $('span', this.$select).html(this.options.fetchStr);
         $.ajax({
           url: url,
           dataType: 'jsonp',
@@ -1080,11 +1076,13 @@
                 });
               });
             }
-            $('span', fontselect.$select).html(fontselect.options.placeholder);
-			fontselect.$drop.empty();
-			fontselect.$results.empty();
-			fontselect.$drop.append(fontselect.$results.append(fontselect.fontsAsHtml())).hide();
-            fontselect.setupFonts();
+            fontselect.$drop.empty();
+            fontselect.$results.empty();
+            fontselect.$drop.append(fontselect.$results.append(fontselect.fontsAsHtml())).hide();
+            $('li', fontselect.$results)
+              .click(__bind(fontselect.selectFont, fontselect))
+              .mouseenter(__bind(fontselect.activateFont, fontselect))
+              .mouseleave(__bind(fontselect.deactivateFont, fontselect));
           },
           error: function(xmlhttp) {
             // JSONP doesn't trigger any event if there's an error with the request

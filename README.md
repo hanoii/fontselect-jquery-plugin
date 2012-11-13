@@ -34,7 +34,6 @@ Fontselect has one argument, an options object that you might want to customise:
 * fonts: an array which you can use to limit the fonts available on the select element.
 It must follow the font family format used in Google's standard css URL
 * fetch: Fetch an updated list from Google.
-* fetchStr: text to use while the list is loading
 * apiKey: An optional key to append to the api URL when fetching the list.
 Anonymously works but it may stop working or reach certain limits. Google
 recommends using a key.  See
@@ -43,8 +42,6 @@ for more details.
 
         $('input.fonts').fontselect({
           fetch: true,
-          fetchStr: 'Fetching list...',
-          fonts: ["Architects+Daughter", "Gentium+Basic:700", "Gentium+Basic:700italic"]
         });
 
            
