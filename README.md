@@ -1,6 +1,6 @@
 # Fontselect jQuery Plugin
 
-A font selector to choose from fonts available as part of the Google Web Fonts api. 
+A font selector to choose from fonts available as part of the Google Web Fonts api.
 
 Let users easily select and preview a font from Google's large range of free fonts.
 
@@ -28,7 +28,7 @@ Fontselect has one argument, an options object that you might want to customise:
           placeholder: 'Select a font',
           lookahead: 2
         });
-        
+
 #### Advanced options
 
 * fonts: an array which you can use to limit the fonts available on the select element.
@@ -39,22 +39,23 @@ Anonymously works but it may stop working or reach certain limits. Google
 recommends using a key.  See
 [Google Web Fonts' Developer API](https://developers.google.com/webfonts/docs/developer_api)
 for more details.
+* combine: Combined all variants of a single family instead of one per variant
 
         $('input.fonts').fontselect({
           fetch: true,
         });
 
-           
+
 ### Events
 
-Fontselect triggers the change event on the original element when a font is selected. 
+Fontselect triggers the change event on the original element when a font is selected.
 An example is included to show how this could be used to update the font on the current page.
 
         $('input.fonts').fontselect().change(function(){
-        
+
           // replace + signs with spaces for css
           var font = $(this).val().replace(/\+/g, ' ');
-          
+
           // log font name
           console.log(font);
         });

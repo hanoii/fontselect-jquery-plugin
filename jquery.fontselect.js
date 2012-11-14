@@ -1038,6 +1038,7 @@
       apiUrl:           'https://www.googleapis.com/webfonts/v1/webfonts',
       apiKkey:          null,
       fetch:            false,
+      combine:          false
     }, options);
 
     var Fontselect = (function(){
@@ -1116,12 +1117,14 @@
 
         if(this.active){
           this.$element.removeClass('font-select-active');
+          this.$top = this.$results.scrollTop();
           this.$drop.hide();
           clearInterval(this.visibleInterval);
 
         } else {
           this.$element.addClass('font-select-active');
           this.$drop.show();
+          this.$results.scrollTop(this.$top);
           this.moveToSelected();
           this.visibleInterval = setInterval(__bind(this.getVisibleFonts, this), 500);
         }
@@ -1141,13 +1144,16 @@
 
         var $li, font = this.$original.val();
 
-        if (font){
+        if (font) {
           $li = $("li[data-value='"+ font +"']", this.$results);
         } else {
           $li = $("li", this.$results).first();
         }
 
-        this.$results.scrollTop($li.addClass('active').position().top);
+        if (!$li.hasClass('active')) {
+          this.$results.scrollTop(0);
+          this.$results.scrollTop($li.addClass('active').position().top);
+        }
       };
 
       Fontselect.prototype.activateFont = function(ev){
@@ -1180,8 +1186,33 @@
 
       Fontselect.prototype.fontsAsHtml = function(){
 
-	var fonts = this.options.fonts;
+        var fonts = this.options.fonts;
         var l = fonts.length;
+
+        if (this.options.combine) {
+          var combined = [];
+          var name = '';
+          var family = '';
+          for (var i=0 ; i<l ; i++) {
+            var parts = fonts[i].split(':');
+            if (name == '' || name != parts[0]) {
+              if (name != '') {
+                combined.push(family);
+              }
+              name = parts[0];
+              family = fonts[i];
+            }
+            else {
+              family = family + '|' + fonts[i];
+            }
+            if (i == l-1) {
+              combined.push(family);
+            }
+          }
+          fonts = combined;
+          l = fonts.length;
+        }
+
         var r, s, h = '';
 
         for(var i=0; i<l; i++){
@@ -1194,7 +1225,11 @@
       };
 
       Fontselect.prototype.toReadable = function(font){
-        return font.replace(/[\+|:]/g, ' ');
+        var readable = font;
+        if (this.options.combine) {
+          readable = readable.replace(/:.*/, '');
+        }
+        return readable.replace(/[\+|:]/g, ' ');
       };
 
       Fontselect.prototype.toStyle = function(font){
